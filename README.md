@@ -1,6 +1,6 @@
 # Upgrade.Chat Python Wrapper
 
-A type hinted Python wrapper for interacting with the Upgrade.Chat API.
+A type hinted async Python wrapper for interacting with the Upgrade.Chat API.
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
