@@ -31,7 +31,7 @@ setup(
     author_email="alex.c.goble@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    description="An type hinted async Python wrapper for the Upgrade.Chat API",
+    description="A type hinted async Python wrapper for the Upgrade.Chat API",
     packages=find_packages(),
     keywords=keywords,
     classifiers=[
