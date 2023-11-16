@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from .api import Client
 from .exceptions import (APIError, AuthenticationError, HTTPError,
                          ResourceNotFoundError)
@@ -26,4 +28,4 @@ __all__ = [
     "User",
     "UsersResponse",
 ]
-__version__ = "0.0.5"
+__version__ = (Path(__file__).parent.parent / "version.txt").read_text()

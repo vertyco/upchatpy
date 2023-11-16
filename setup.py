@@ -1,13 +1,14 @@
 from setuptools import find_packages, setup
 
-from upgrade_chat import __version__
+with open("version.txt", "r", encoding="utf-8") as version_file:
+    version = version_file.read().strip()
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="upchatpy",
-    version=__version__,
+    version=version,
     url="https://github.com/vertyco/upgrade-chat",
     author="vertyco",
     author_email="alex.c.goble@gmail.com",
