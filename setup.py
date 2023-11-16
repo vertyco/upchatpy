@@ -5,6 +5,20 @@ from setuptools import find_packages, setup
 
 version_raw = (Path(__file__).parent / "upgrade_chat" / "version.py").read_text()
 version = re.compile(r'__version__\s=\s"(\d+\.\d+.\d)').search(version_raw).group(1)
+keywords = [
+    "Upgrade.Chat",
+    "chat",
+    "bot",
+    "discord",
+    "upgradechat",
+    "donations",
+    "subscriptions",
+    "monetization",
+    "payment",
+    "api",
+    "wrapper",
+    "client",
+]
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
@@ -17,9 +31,9 @@ setup(
     author_email="alex.c.goble@gmail.com",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    description="A type hinted Python wrapper for the Upgrade.Chat API ",
+    description="An type hinted async Python wrapper for the Upgrade.Chat API",
     packages=find_packages(),
-    keywords="upgrade.chat upgradechat upgradechatpy monetization api wrapper chat payments discord",
+    keywords=keywords,
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
@@ -36,5 +50,5 @@ setup(
         "Natural Language :: English",
     ],
     install_requires=["aiohttp", "pydantic"],
-    python_requires=">=3.10",
+    python_requires=">=3.9",
 )

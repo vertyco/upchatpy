@@ -1,70 +1,103 @@
-from datetime import datetime
+from __future__ import annotations
 
-from . import _Base
+from datetime import datetime
+from enum import Enum
+from typing import List, Optional
+from uuid import UUID
+
+from pydantic import Field
+
+from . import Interval, ProductType, _Base
+
+
+class ItemType(Enum):
+    value = "value"
+    percentage = "percentage"
+
+
+class OrderType(Enum):
+    UPGRADE = "UPGRADE"
+    SHOP = "SHOP"
+
+
+class Duration(Enum):
+    once = "once"
+    forever = "forever"
+    repeating = "repeating"
+
+
+class PaymentProcessor(Enum):
+    PAYPAL = "PAYPAL"
+    STRIPE = "STRIPE"
 
 
 class OrderUser(_Base):
-    discord_id: str
-    username: str
-    email: str | None = None  # Only shows up for individual order call
-    username: str | None = None  # Only shows up for individual order call
+    id: Optional[float] = None
+    discord_id: Optional[str] = None
+
+    # Only shows up for individual order call
+    email: Optional[str] = None
+    username: Optional[str] = None
 
 
 class Coupon(_Base):
-    code: str
-    type: str = None
-    duration: str
-    duration_in_months: int | None
-    amount_off: float | None = None
-    percent_off: float
-    created: datetime
+    code: Optional[str] = None
+    type: Optional[ItemType] = None
+    duration: Optional[Duration] = None
+    duration_in_months: Optional[float] = None
+    amount_off: Optional[float] = None
+    percent_off: Optional[float] = None
+    created: Optional[datetime] = Field(None, description="The date when the coupon was created")
 
 
 class DiscordRole(_Base):
-    discord_id: str
-    name: str
+    discord_id: Optional[str] = None
+    name: Optional[str] = None
 
 
 class Product(_Base):
-    uuid: str
-    name: str
+    uuid: Optional[UUID] = None
+    name: Optional[str] = None
 
 
 class OrderItem(_Base):
-    price: float
-    quantity: int
-    interval: str
-    interval_count: int
-    free_trial_length: int | None
-    is_time_limited: bool
-    type: str | None = None
-    discord_roles: list[DiscordRole]
-    product_types: list[str]
-    product: Product
+    price: Optional[float] = None
+    quantity: Optional[float] = None
+    interval: Optional[Interval] = None
+    interval_count: Optional[float] = None
+    free_trial_length: Optional[float] = None
+    is_time_limited: Optional[bool] = None
+    type: Optional[ItemType] = None
+    discord_roles: Optional[List[DiscordRole]] = None
+    product_types: Optional[List[ProductType]] = Field(
+        None,
+        description="The types of the product. A product purchased through the shop will be a shop product. All other types are upgrades.",
+    )
+    product: Optional[Product] = Field(None, description="An Upgrade.Chat product")
 
 
 class Order(_Base):
-    uuid: str
-    purchased_at: datetime
-    payment_processor: str
-    payment_processor_record_id: str
-    user: OrderUser
-    subtotal: float
-    discount: float
-    total: float
-    coupon_code: str | None
-    coupon: Coupon | None
-    type: str | None
-    is_subscription: bool
-    cancelled_at: datetime | None
-    deleted: datetime | None
-    order_items: list[OrderItem] | None
+    uuid: Optional[str] = None
+    purchased_at: Optional[datetime] = None
+    payment_processor: Optional[PaymentProcessor] = None
+    payment_processor_record_id: Optional[str] = None
+    user: Optional[OrderUser] = None
+    subtotal: Optional[float] = None
+    discount: Optional[float] = None
+    total: Optional[float] = None
+    coupon_code: Optional[str] = Field(None, description="The applied coupon code if any")
+    coupon: Optional[Coupon] = Field(None, description="The applied coupon if any")
+    type: Optional[OrderType] = None
+    is_subscription: Optional[bool] = None
+    cancelled_at: Optional[datetime] = Field(None, description="The date when the subscription was cancelled")
+    deleted: Optional[datetime] = Field(None, description="The date when the subscription expired")
+    order_items: Optional[List[OrderItem]] = None
 
 
 class OrdersResponse(_Base):
     """Lists Orders"""
 
-    data: list[Order]
+    data: List[Order]
     total: int
     has_more: bool
 

@@ -1,5 +1,5 @@
 import logging
-from typing import AsyncGenerator
+from typing import AsyncGenerator, Optional
 from urllib.parse import urlencode
 
 import aiohttp
@@ -25,7 +25,7 @@ class Client:
         """
         self.client_id = client_id
         self.client_secret = client_secret
-        self.access_token: str | None = None
+        self.access_token: Optional[str] = None
 
     async def get_auth(self) -> None:
         """
@@ -90,9 +90,9 @@ class Client:
         self,
         limit: int = 100,
         offset: int = 0,
-        user_discord_id: str | None = None,
-        order_type: str | None = None,
-        coupon: bool | None = None,
+        user_discord_id: Optional[str] = None,
+        order_type: Optional[str] = None,
+        coupon: Optional[bool] = None,
     ) -> AsyncGenerator[OrdersResponse, None]:
         """
         Asynchronously fetches orders with pagination support.
@@ -100,9 +100,9 @@ class Client:
         Args:
             limit (int, optional): The maximum number of orders to retrieve per page. Defaults to 100.
             offset (int, optional): The offset to start retrieving orders from. Defaults to 0.
-            user_discord_id (str | None, optional): Filter orders for a specific Discord user ID. Defaults to None.
-            order_type (str | None, optional): Filter orders by type. Defaults to None.
-            coupon (str | None, optional): Filter orders by coupon. Defaults to None.
+            user_discord_id (Optional[str], optional): Filter orders for a specific Discord user ID. Defaults to None.
+            order_type (Optional[str], optional): Filter orders by type. Defaults to None.
+            coupon (Optional[str], optional): Filter orders by coupon. Defaults to None.
 
         Returns:
             AsyncGenerator[OrdersResponse, None]: An async generator yielding OrdersResponse objects.
@@ -123,9 +123,9 @@ class Client:
         self,
         limit: int = 100,
         offset: int = 0,
-        user_discord_id: str | None = None,
-        order_type: str | None = None,
-        coupon: str | None = None,
+        user_discord_id: Optional[str] = None,
+        order_type: Optional[str] = None,
+        coupon: Optional[str] = None,
     ) -> OrdersResponse:
         """
         Fetches a list of orders from the Upgrade.Chat API.
@@ -133,9 +133,9 @@ class Client:
         Args:
             limit (int, optional): The maximum number of orders to retrieve per page. Defaults to 100.
             offset (int, optional): The offset to start retrieving orders from. Defaults to 0.
-            user_discord_id (str | None, optional): Filter orders for a specific Discord user ID. Defaults to None.
-            order_type (str | None, optional): Filter orders by type. Defaults to None.
-            coupon (str | None, optional): Filter orders by coupon. Defaults to None.
+            user_discord_id (Optional[str], optional): Filter orders for a specific Discord user ID. Defaults to None.
+            order_type (Optional[str], optional): Filter orders by type. Defaults to None.
+            coupon (Optional[str], optional): Filter orders by coupon. Defaults to None.
 
         Returns:
             OrdersResponse: An OrdersResponse object containing the fetched orders.
@@ -167,7 +167,7 @@ class Client:
         return OrderResponse.model_validate(response)
 
     async def aget_products(
-        self, limit: int = 100, offset: int = 0, product_type: str | None = None
+        self, limit: int = 100, offset: int = 0, product_type: Optional[str] = None
     ) -> AsyncGenerator[ProductsResponse, None]:
         """
         Asynchronously fetches products with pagination support.
@@ -175,7 +175,7 @@ class Client:
         Args:
             limit (int, optional): The number of products to fetch per request. Defaults to 100.
             offset (int, optional): The offset from where to start fetching products. Defaults to 0.
-            product_type (str | None, optional): Optional product type to filter products. Defaults to None.
+            product_type (Optional[str], optional): Optional product type to filter products. Defaults to None.
 
         Returns:
             AsyncGenerator[ProductsResponse, None]: An async generator yielding ProductsResponse objects.
@@ -193,7 +193,7 @@ class Client:
             offset += limit
 
     async def get_products(
-        self, limit: int = 100, offset: int = 0, product_type: str | None = None
+        self, limit: int = 100, offset: int = 0, product_type: Optional[str] = None
     ) -> ProductsResponse:
         """
         Asynchronously fetches products with pagination support.
@@ -201,7 +201,7 @@ class Client:
         Args:
             limit (int, optional): The number of products to fetch per request. Defaults to 100.
             offset (int, optional): The offset from where to start fetching products. Defaults to 0.
-            product_type (str | None, optional): Optional product type to filter products. Defaults to None.
+            product_type (Optional[str], optional): Optional product type to filter products. Defaults to None.
 
         Returns:
             ProductsResponse: A ProductsResponse object containing the fetched products.
