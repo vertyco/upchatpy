@@ -2,9 +2,12 @@
 
 A type hinted Python wrapper for interacting with the Upgrade.Chat API.
 
-[![badge](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
-[![badge](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
-![badge](https://img.shields.io/badge/Pydantic-E92063.svg?logo=Pydantic&logoColor=white)
+[![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
+[![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
+![GitHub License](https://img.shields.io/github/license/vertyco/upgrade-chat)
+
+[![Pydantic v1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v1.json)](https://docs.pydantic.dev/1.10/contributing/#badges)
+[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
 
 ## Introduction
 
