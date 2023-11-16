@@ -4,6 +4,7 @@ A type hinted Python wrapper for interacting with the Upgrade.Chat API.
 
 [![badge](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![badge](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
+![badge](https://img.shields.io/badge/Pydantic-E92063.svg?logo=Pydantic&logoColor=white)
 
 ## Introduction
 
