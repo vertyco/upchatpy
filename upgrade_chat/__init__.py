@@ -1,14 +1,7 @@
 from .api import Client
-from .responses.orders import (
-    Coupon,
-    DiscordRole,
-    Order,
-    OrderItem,
-    OrderResponse,
-    OrdersResponse,
-    OrderUser,
-    Product,
-)
+from .responses.orders import (Coupon, DiscordRole, Order, OrderItem,
+                               OrderResponse, OrdersResponse, OrderUser,
+                               Product)
 from .responses.products import ProductResponse, ProductsResponse
 from .responses.users import User, UsersResponse
 

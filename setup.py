@@ -30,6 +30,6 @@ setup(
         "Typing :: Typed",
         "Natural Language :: English",
     ],
-    requires=["pydantic", "aiohttp"]
+    requires=["pydantic", "aiohttp"],
     python_requires=">=3.10",
 )
