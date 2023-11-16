@@ -1,7 +1,10 @@
+import re
+from pathlib import Path
+
 from setuptools import find_packages, setup
 
-with open("version.txt", "r", encoding="utf-8") as version_file:
-    version = version_file.read().strip()
+version_raw = (Path(__file__).parent / "upgrade_chat" / "version.py").read_text()
+version = re.compile(r'__version__\s=\s"(\d+\.\d+.\d)').search(version_raw).group(1)
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
