@@ -31,6 +31,6 @@ setup(
         "Typing :: Typed",
         "Natural Language :: English",
     ],
-    requires=["pydantic", "aiohttp"],
+    install_requires=["aiohttp", "pydantic"],
     python_requires=">=3.10",
 )
