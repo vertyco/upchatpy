@@ -11,7 +11,7 @@ This package provides a convenient and easy-to-use Python interface for the Upgr
 To install the package, run the following command:
 
 ```bash
-pip install upgrade-chat
+pip install upchatpy
 ```
 
 ## Usage

@@ -15,10 +15,9 @@ __all__ = [
     "OrdersResponse",
     "OrderUser",
     "Product",
-    "UserDetail",
     "ProductResponse",
     "ProductsResponse",
     "User",
     "UsersResponse",
 ]
-__version__ = "0.0.1"
+__version__ = "0.0.12"

@@ -6,9 +6,9 @@ with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
-    name="upgrade_chat",
+    name="upchatpy",
     version=__version__,
-    url="https://github.com/vertyco/upgrade_chat",
+    url="https://github.com/vertyco/upgrade-chat",
     author="vertyco",
     author_email="alex.c.goble@gmail.com",
     long_description=long_description,
