@@ -15,6 +15,7 @@ setup(
     long_description_content_type="text/markdown",
     description="A type hinted Python wrapper for the Upgrade.Chat API ",
     packages=find_packages(),
+    keywords="upgrade.chat upgradechat upgradechatpy monetization api wrapper chat payments discord",
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
