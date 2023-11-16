@@ -2,6 +2,9 @@
 
 A type hinted Python wrapper for interacting with the Upgrade.Chat API.
 
+[![badge](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
+[![badge](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
+
 ## Introduction
 
 This package provides a convenient and easy-to-use Python interface for the Upgrade.Chat API, allowing developers to integrate Upgrade.Chat's services into their applications. Upgrade.Chat is a platform that facilitates monetization for community services, and this wrapper aims to simplify the automation of tasks such as managing orders, products, and users.
