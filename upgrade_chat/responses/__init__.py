@@ -4,6 +4,8 @@ from pydantic import VERSION, BaseModel
 
 
 class _Base(BaseModel):
+    """Makes response models cross-version compatible"""
+
     @classmethod
     def model_validate(cls, obj, *args, **kwargs):
         if VERSION >= "2.0.1":
@@ -21,8 +23,3 @@ class Interval(Enum):
 class ProductType(Enum):
     DISCORD_ROLE = "DISCORD_ROLE"
     SHOP_PRODUCT = "SHOP_PRODUCT"
-
-
-class PaymentProcessor(Enum):
-    PAYPAL = "PAYPAL"
-    STRIPE = "STRIPE"
