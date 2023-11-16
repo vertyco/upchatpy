@@ -69,6 +69,41 @@ for user in users_response.data:
     print(user.discord_id, user.username)
 ```
 
+## Exception Handling
+
+The Upgrade.Chat Python Wrapper provides custom exceptions to help you handle potential errors that may occur during API interaction.
+
+### Custom Exceptions
+
+- `AuthenticationError`: Raised when there is a problem with client authentication, such as incorrect client ID or client secret.
+- `HTTPError`: Raised for general HTTP-related errors when making API requests.
+- `ResourceNotFoundError`: Raised when a requested resource is not found on the Upgrade.Chat API.
+
+### Example Usage
+
+```python
+from upgrade_chat import Client
+from upgrade_chat.exceptions import AuthenticationError, HTTPError, ResourceNotFoundError
+
+client_id = 'your_client_id'
+client_secret = 'your_client_secret'
+client = Client(client_id, client_secret)
+
+async def main():
+    try:
+        orders_response = await client.get_orders()
+        for order in orders_response.data:
+            print(order.uuid, order.total)
+    except AuthenticationError as e:
+        print(f"Authentication failed with status code {e.status_code}: {e.message}")
+    except ResourceNotFoundError as e:
+        print(f"Resource not found with status code {e.status_code}: {e.message}")
+    except HTTPError as e:
+        print(f"HTTP error with status code {e.status_code}: {e.message}")
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+```
+
 ## Development
 
 This package is under active development, and contributions are welcome! If you encounter any issues or have feature requests, please submit them to the project's issue tracker.

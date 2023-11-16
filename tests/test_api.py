@@ -4,6 +4,7 @@ import pytest
 from dotenv import load_dotenv
 
 from upgrade_chat.api import Client
+from upgrade_chat.exceptions import AuthenticationError, ResourceNotFoundError
 
 load_dotenv()
 
@@ -14,6 +15,10 @@ client = Client(client_id=client_id, client_secret=client_secret)
 
 @pytest.mark.asyncio
 async def test_authentication():
+    invalidclient = Client("invalid", "invalid")
+    with pytest.raises(AuthenticationError) as exc_info:
+        await invalidclient.get_orders()
+        assert "Failed to authenticate" in str(exc_info.value)
     await client.get_auth()
     assert client.access_token is not None, "Authentication failed, no access token obtained"
 
@@ -24,6 +29,22 @@ async def test_get_orders():
     assert orders_response is not None, "Failed to fetch orders"
     assert hasattr(orders_response, "data"), "Orders response does not have data attribute"
     assert isinstance(orders_response.data, list), "Orders data is not a list"
+
+    iters = 1
+    async for orders in client.aget_orders(limit=1):
+        assert orders is not None, "aget Failed to fetch orders"
+        assert hasattr(orders, "data"), "aget Orders response does not have data attribute"
+        assert isinstance(orders.data, list), "aget Orders data is not a list"
+        iters += 1
+        if iters > 2:
+            break
+
+
+@pytest.mark.asyncio
+async def test_get_orders_invalid_discord_id():
+    with pytest.raises(ResourceNotFoundError) as exc_info:
+        await client.get_orders(user_discord_id="35005350581528166")
+        assert "User 35005350581528166 does not exist" in str(exc_info.value)
 
 
 @pytest.mark.asyncio
@@ -42,6 +63,15 @@ async def test_get_products():
     assert products_response is not None, "Failed to fetch products"
     assert hasattr(products_response, "data"), "Products response does not have data attribute"
     assert isinstance(products_response.data, list), "Products data is not a list"
+
+    iters = 1
+    async for products in client.aget_products(limit=1):
+        assert products is not None, "aget Failed to fetch products"
+        assert hasattr(products, "data"), "aget Products response does not have data attribute"
+        assert isinstance(products.data, list), "aget Products data is not a list"
+        iters += 1
+        if iters > 2:
+            break
 
 
 @pytest.mark.asyncio
