@@ -1,34 +1,14 @@
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
 from typing import List, Optional
 from uuid import UUID
 
 from pydantic import Field
 
-from . import Interval, ProductType, _Base
-
-
-class ItemType(Enum):
-    value = "value"
-    percentage = "percentage"
-
-
-class OrderType(Enum):
-    UPGRADE = "UPGRADE"
-    SHOP = "SHOP"
-
-
-class Duration(Enum):
-    once = "once"
-    forever = "forever"
-    repeating = "repeating"
-
-
-class PaymentProcessor(Enum):
-    PAYPAL = "PAYPAL"
-    STRIPE = "STRIPE"
+from . import _Base
+from .enums import (Duration, Interval, ItemType, OrderType, PaymentProcessor,
+                    ProductType)
 
 
 class OrderUser(_Base):

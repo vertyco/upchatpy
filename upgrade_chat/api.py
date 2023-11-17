@@ -25,6 +25,7 @@ SOFTWARE.
 import logging
 from typing import AsyncGenerator, Optional
 from urllib.parse import urlencode
+from uuid import UUID
 
 import aiohttp
 
@@ -32,6 +33,9 @@ from .exceptions import AuthenticationError, HTTPError, ResourceNotFoundError
 from .responses.orders import OrderResponse, OrdersResponse
 from .responses.products import ProductResponse, ProductsResponse
 from .responses.users import UsersResponse
+from .responses.webhooks import (WebhookEventResponse, WebhookEventsResponse,
+                                 WebhookResponse, WebhooksResponse,
+                                 WebhookValidResponse)
 
 log = logging.getLogger("upgrade.chat")
 
@@ -119,7 +123,7 @@ class Client:
         coupon: Optional[bool] = None,
     ) -> AsyncGenerator[OrdersResponse, None]:
         """
-        Asynchronously fetches orders with pagination support.
+        Fetches orders with pagination support.
 
         Args:
             limit (int, optional): The maximum number of orders to retrieve per page. Defaults to 100.
@@ -194,7 +198,7 @@ class Client:
         self, limit: int = 100, offset: int = 0, product_type: Optional[str] = None
     ) -> AsyncGenerator[ProductsResponse, None]:
         """
-        Asynchronously fetches products with pagination support.
+        Fetches products with pagination support.
 
         Args:
             limit (int, optional): The number of products to fetch per request. Defaults to 100.
@@ -271,3 +275,120 @@ class Client:
 
         response = await self._request("GET", endpoint)
         return UsersResponse.model_validate(response)
+
+    async def aget_webhooks(self, limit: int = 100, offset: int = 0) -> AsyncGenerator[WebhooksResponse, None]:
+        """
+        Fetches a list of webhooks with pagination support
+
+        Args:
+            limit (int): The maximum number of webhooks to retrieve.
+            offset (int): The offset to start retrieving webhooks from, this will increment by the limit each iteration.
+
+        Returns:
+            AsyncGenerator[WebhooksResponse, None]: An async generator yielding WebhooksResponse objects.
+        """
+        offset = offset or 0
+        while True:
+            res = await self.get_webhooks(limit, offset)
+            yield res
+
+            if not res.has_more:
+                break
+            offset += limit
+
+    async def get_webhooks(self, limit: int = 100, offset: int = 0) -> WebhooksResponse:
+        """
+        Fetches a list of webhooks.
+
+        Args:
+            limit (int): The maximum number of webhooks to retrieve.
+            offset (int): The offset to start retrieving webhooks from.
+
+        Returns:
+            WebhooksResponse: A WebhooksResponse object containing the fetched webhooks.
+        """
+        query_params = {"limit": limit, "offset": offset}
+        query_string = urlencode(query_params)
+        endpoint = f"/v1/webhooks?{query_string}"
+
+        response = await self._request("GET", endpoint)
+        return WebhooksResponse.model_validate(response)
+
+    async def get_webhook(self, webhook_id: UUID) -> WebhookResponse:
+        """
+        Fetches a single webhook by ID.
+
+        Args:
+            webhook_id (UUID): The ID of the webhook to retrieve.
+
+        Returns:
+            WebhookResponse: A WebhookResponse object containing the webhook details.
+        """
+        response = await self._request("GET", f"/v1/webhooks/{webhook_id}")
+        return WebhookResponse.model_validate(response)
+
+    async def aget_webhook_events(
+        self, limit: int = 100, offset: int = 0
+    ) -> AsyncGenerator[WebhookEventsResponse, None]:
+        """
+        Fetches a list of webhooks events with pagination support
+
+        Args:
+            limit (int): The maximum number of webhooks to retrieve.
+            offset (int): The offset to start retrieving webhooks from, this will increment by the limit each iteration.
+
+        Returns:
+            AsyncGenerator[WebhookEventsResponse, None]: An async generator yielding WebhookEventsResponse objects.
+        """
+        offset = offset or 0
+        while True:
+            res = await self.get_webhook_events(limit, offset)
+            yield res
+
+            if not res.has_more:
+                break
+            offset += limit
+
+    async def get_webhook_events(self, limit: int = 100, offset: int = 0) -> WebhookEventsResponse:
+        """
+        Fetches a list of webhook events.
+
+        Args:
+            limit (int): The maximum number of webhook events to retrieve.
+            offset (int): The offset to start retrieving webhook events from.
+
+        Returns:
+            WebhookEventsResponse: A WebhookEventsResponse object containing the fetched webhook events.
+        """
+        query_params = {"limit": limit, "offset": offset}
+        query_string = urlencode(query_params)
+        endpoint = f"/v1/webhook-events?{query_string}"
+
+        response = await self._request("GET", endpoint)
+        return WebhookEventsResponse.model_validate(response)
+
+    async def get_webhook_event(self, event_id: UUID) -> WebhookEventResponse:
+        """
+        Fetches a single webhook event by ID.
+
+        Args:
+            event_id (UUID): The ID of the webhook event to retrieve.
+
+        Returns:
+            WebhookEventResponse: A WebhookEventResponse object containing the webhook event details.
+        """
+        response = await self._request("GET", f"/v1/webhook-events/{event_id}")
+        return WebhookEventResponse.model_validate(response)
+
+    async def validate_webhook_event(self, event_id: UUID) -> WebhookValidResponse:
+        """
+        Validates a webhook event by ID.
+
+        Args:
+            event_id (UUID): The ID of the webhook event to validate.
+
+        Returns:
+            WebhookValidResponse: A WebhookValidResponse object indicating if the event is valid.
+        """
+        response = await self._request("GET", f"/v1/webhook-events/{event_id}/validate")
+        return WebhookValidResponse.model_validate(response)

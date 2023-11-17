@@ -6,7 +6,8 @@ from uuid import UUID
 
 from pydantic import AnyUrl, Field
 
-from . import Interval, ProductType, _Base
+from . import _Base
+from .enums import Interval, ProductType
 
 
 class Product(_Base):
