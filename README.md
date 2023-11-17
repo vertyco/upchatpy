@@ -4,7 +4,7 @@ A type hinted async Python wrapper for interacting with the Upgrade.Chat API.
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
-![GitHub License](https://img.shields.io/github/license/vertyco/upgrade-chat)
+![GitHub License](https://img.shields.io/github/license/vertyco/upchatpy)
 
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3913/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-31011/)
