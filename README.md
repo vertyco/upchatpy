@@ -57,6 +57,22 @@ for order in orders_response.data:
     print(order.uuid, order.total)
 ```
 
+To fetch all orders with pagination support:
+
+```python
+async for orders_response in client.aget_orders():
+    for order in orders_response.data:
+        print(order.uuid, order.total)
+```
+
+To fetch a specific order by UUID:
+
+```python
+order_uuid = 'your_order_uuid'
+order_response = await client.get_order(order_uuid)
+print(order_response.data.total)
+```
+
 ### Fetching Products
 
 Retrieve a list of products using:
@@ -67,6 +83,22 @@ for product in products_response.data:
     print(product.uuid, product.name)
 ```
 
+To fetch all products with pagination support:
+
+```python
+async for products_response in client.aget_products():
+    for product in products_response.data:
+        print(product.uuid, product.name)
+```
+
+To fetch a product order by UUID:
+
+```python
+product_uuid = 'your_product_uuid'
+product_response = await client.get_product(product_uuid)
+print(product_response.data.name)
+```
+
 ### Fetching Users
 
 To get a list of users, you can do:
@@ -75,6 +107,68 @@ To get a list of users, you can do:
 users_response = await client.get_users()
 for user in users_response.data:
     print(user.discord_id, user.username)
+```
+
+### Fetching Webhooks
+
+Retrieve a list of webhooks using:
+
+```python
+webhooks_response = await client.get_webhooks()
+for webhook in webhooks_response.data:
+    print(webhook.id, webhook.uri)
+```
+
+To fetch all webhooks with pagination support:
+
+```python
+async for webhooks_response in client.aget_webhooks():
+    for webhook in webhooks_response.data:
+        print(webhook.id, webhook.url)
+```
+
+To fetch a specific webhook by ID:
+
+```python
+webhook_id = 'your_webhook_id'
+webhook_response = await client.get_webhook(webhook_id)
+print(webhook_response.data.id, webhook_response.data.url)
+```
+
+### Fetching Webhook Events
+
+Retrieve a list of webhooks events using:
+
+```python
+webhook_events_response = await client.get_webhook_events()
+for webhook_event in webhook_events_response.data:
+    print(webhook_event.id, webhook_event.webhook_id)
+```
+
+To retrieve a list of webhook events with pagination support:
+
+```python
+async for webhook_events_response in client.aget_webhook_events():
+    for webhook_event in webhook_events_response.data:
+        print(webhook_event.id, webhook_event.webhook_id)
+```
+
+To fetch a specific webhook event by ID:
+
+```python
+event_id = 'your_event_id'
+webhook_event_response = await client.get_webhook_event(event_id)
+print(webhook_event_response.data.id)
+```
+
+### Validating Webhook Events
+
+To validate a webhook event by ID:
+
+```python
+event_id = 'your_event_id'
+webhook_valid_response = await client.validate_webhook_event(event_id)
+print(webhook_valid_response.data.is_valid)
 ```
 
 ## Exception Handling
