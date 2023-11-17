@@ -26,7 +26,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 setup(
     name="upchatpy",
     version=version,
-    url="https://github.com/vertyco/upgrade-chat",
+    url="https://github.com/vertyco/upchatpy",
     author="vertyco",
     author_email="alex.c.goble@gmail.com",
     long_description=long_description,

@@ -75,7 +75,7 @@ print(order_response.data.total)
 
 ### Fetching Products
 
-Retrieve a list of products using:
+Fetch a list of products using:
 
 ```python
 products_response = await client.get_products()
@@ -111,7 +111,7 @@ for user in users_response.data:
 
 ### Fetching Webhooks
 
-Retrieve a list of webhooks using:
+Fetch a list of webhooks using:
 
 ```python
 webhooks_response = await client.get_webhooks()
@@ -137,7 +137,7 @@ print(webhook_response.data.id, webhook_response.data.url)
 
 ### Fetching Webhook Events
 
-Retrieve a list of webhooks events using:
+Fetch a list of webhooks events using:
 
 ```python
 webhook_events_response = await client.get_webhook_events()
@@ -145,7 +145,7 @@ for webhook_event in webhook_events_response.data:
     print(webhook_event.id, webhook_event.webhook_id)
 ```
 
-To retrieve a list of webhook events with pagination support:
+To fetch a list of webhook events with pagination support:
 
 ```python
 async for webhook_events_response in client.aget_webhook_events():
