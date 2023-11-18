@@ -1,7 +1,5 @@
 # Upgrade.Chat Python Wrapper
 
-A type hinted async Python wrapper for interacting with the Upgrade.Chat API.
-
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
 ![GitHub License](https://img.shields.io/github/license/vertyco/upchatpy)
@@ -17,7 +15,7 @@ A type hinted async Python wrapper for interacting with the Upgrade.Chat API.
 
 This package provides a convenient and easy-to-use Python interface for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API, allowing developers to integrate Upgrade.Chat's services into their applications. Upgrade.Chat is a platform that facilitates monetization for community services, and this wrapper aims to simplify the automation of tasks such as fetching orders, products, users and webhook events.
 
-#### References
+#### Upgrade.Chat References
 
 - [Homepage](https://upgrade.chat/)
 - [FAQ](https://docs.upgrade.chat/)
