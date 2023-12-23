@@ -19,6 +19,8 @@ This package provides a fully async, type-hinted wraper for the **[Upgrade.Chat]
 
 #### References
 
+Upgrade.Chat is a platform that facilitates monetization for community services, particularly Discord. This wrapper aims to simplify integration with other 3rd party apps.
+
 - [Homepage](https://upgrade.chat/)
 - [FAQ](https://docs.upgrade.chat/)
 - [API Docs](https://upgrade.chat/developers/documentation)
