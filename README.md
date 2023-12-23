@@ -2,7 +2,9 @@
   <img src="https://repository-images.githubusercontent.com/719405304/08bd8dbc-7215-42d7-8bf8-361cc84af957" width="40%" />
 </p>
 
-# Upgrade.Chat Python Wrapper
+# UpChatPy: Upgrade.Chat Python Wrapper
+
+This package provides a fully async, type-hinted wraper for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API.
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
@@ -15,11 +17,7 @@
 [![Pydantic v1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v1.json)](https://docs.pydantic.dev/1.10/contributing/#badges)
 [![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
 
-## Introduction
-
-This package provides a convenient and easy-to-use Python interface for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API, allowing developers to integrate Upgrade.Chat's services into their applications. Upgrade.Chat is a platform that facilitates monetization for community services, and this wrapper aims to simplify the automation of tasks such as fetching orders, products, users and webhook events.
-
-#### Upgrade.Chat References
+#### References
 
 - [Homepage](https://upgrade.chat/)
 - [FAQ](https://docs.upgrade.chat/)
