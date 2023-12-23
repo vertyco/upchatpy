@@ -179,7 +179,7 @@ webhook_valid_response = await client.validate_webhook_event(event_id)
 print(webhook_valid_response.data.is_valid)
 ```
 
-## Checking Subscriptions
+### Checking Subscriptions
 
 The `user_is_subscribed` method enables you to check if a user is currently subscribed to a specific product. This can be useful for verifying user access to features or content based on their subscription status.
 
