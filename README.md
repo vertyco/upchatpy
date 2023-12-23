@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="https://repository-images.githubusercontent.com/719405304/08bd8dbc-7215-42d7-8bf8-361cc84af957" width="40%" />
+</p>
+
 # Upgrade.Chat Python Wrapper
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
