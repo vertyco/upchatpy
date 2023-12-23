@@ -3,7 +3,7 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-version_raw = (Path(__file__).parent / "upgrade_chat" / "version.py").read_text()
+version_raw = (Path(__file__).parent / "upchatpy" / "version.py").read_text()
 version = re.compile(r'__version__\s=\s"(\d+\.\d+.\d)').search(version_raw).group(1)
 keywords = [
     "Upgrade.Chat",

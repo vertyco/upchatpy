@@ -9,11 +9,12 @@ import os
 import pytest
 from dotenv import load_dotenv
 
-from upgrade_chat.api import Client
-from upgrade_chat.exceptions import AuthenticationError, ResourceNotFoundError
-from upgrade_chat.version import __version__
+from upchatpy.api import Client
+from upchatpy.exceptions import AuthenticationError, ResourceNotFoundError
+from upchatpy.version import __version__
 
 load_dotenv()
+
 
 client_id = os.getenv("UPGRADE_CHAT_CLIENT_ID")
 client_secret = os.getenv("UPGRADE_CHAT_CLIENT_SECRET")
@@ -182,3 +183,33 @@ async def test_validate_webhook_event():
         assert isinstance(webhook_valid_response.valid, bool), "Webhook valid attribute is not a boolean"
     else:
         pytest.skip("No webhook events available to validate")
+
+
+@pytest.mark.asyncio
+async def test_user_is_subscribed():
+    # You need to have a valid user ID and product UUID for this test to pass
+    is_subscribed = await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-bbc391c4d53f", "422575858478219288")
+    assert is_subscribed is not None, "Failed to check if user is subscribed"
+    assert isinstance(is_subscribed, bool), "is_subscribed is not a boolean"
+    assert is_subscribed is True, "User is not subscribed to product"
+
+
+@pytest.mark.asyncio
+async def test_user_is_not_subscribed():
+    # You need to have a valid user ID and product UUID for this test to pass
+    is_subscribed = await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-bbc391c4d53f", "691065892099981372")
+    assert is_subscribed is not None, "Failed to check if user is subscribed"
+    assert isinstance(is_subscribed, bool), "is_subscribed is not a boolean"
+    assert is_subscribed is False, "User is subscribed to product"
+
+
+@pytest.mark.asyncio
+async def test_user_is_subscribed_notfound():
+    with pytest.raises(ResourceNotFoundError) as exc_info:
+        await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-test", "1111111111111111", ignore_not_found=False)
+        assert "User 1111111111111111 does not exist" in str(exc_info.value)
+
+    is_subscribed = await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-bbc391c4d53f", "691065892099981372")
+    assert is_subscribed is not None, "Failed to check if user is subscribed"
+    assert isinstance(is_subscribed, bool), "is_subscribed is not a boolean"
+    assert is_subscribed is False, "User is subscribed to product"

@@ -38,7 +38,7 @@ pip install upchatpy
 Before you can start using the API, you need to obtain your client ID and client secret from Upgrade.Chat. Once you have them, you can begin by creating a `Client` instance:
 
 ```python
-from upgrade_chat import Client
+from upchatpy import Client
 
 client_id = 'your_client_id'
 client_secret = 'your_client_secret'
@@ -179,6 +179,20 @@ webhook_valid_response = await client.validate_webhook_event(event_id)
 print(webhook_valid_response.data.is_valid)
 ```
 
+## Checking Subscriptions
+
+The `user_is_subscribed` method enables you to check if a user is currently subscribed to a specific product. This can be useful for verifying user access to features or content based on their subscription status.
+
+```python
+# Replace the following with the actual product UUID and user Discord ID
+product_uuid = "c1eaaee5-9620-4343-b9da-test123"
+user_discord_id = "12312312312312312"
+
+is_subscribed = await client.user_is_subscribed(product_id, user_discord_id)
+print(is_subscribed)
+>> True or False
+```
+
 ## Exception Handling
 
 The Upgrade.Chat Python Wrapper provides custom exceptions to help you handle potential errors that may occur during API interaction.
@@ -192,8 +206,8 @@ The Upgrade.Chat Python Wrapper provides custom exceptions to help you handle po
 ### Example Usage
 
 ```python
-from upgrade_chat import Client
-from upgrade_chat.exceptions import AuthenticationError, HTTPError, ResourceNotFoundError
+from upchatpy import Client
+from upchatpy.exceptions import AuthenticationError, HTTPError, ResourceNotFoundError
 
 client_id = 'your_client_id'
 client_secret = 'your_client_secret'

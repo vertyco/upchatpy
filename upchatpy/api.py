@@ -23,6 +23,7 @@ SOFTWARE.
 """
 
 import logging
+from datetime import datetime, timedelta
 from typing import AsyncGenerator, Optional
 from urllib.parse import urlencode
 from uuid import UUID
@@ -30,7 +31,7 @@ from uuid import UUID
 import aiohttp
 
 from .exceptions import AuthenticationError, HTTPError, ResourceNotFoundError
-from .responses.orders import OrderResponse, OrdersResponse
+from .responses.orders import Order, OrderItem, OrderResponse, OrdersResponse
 from .responses.products import ProductResponse, ProductsResponse
 from .responses.users import UsersResponse
 from .responses.webhooks import (WebhookEventResponse, WebhookEventsResponse,
@@ -392,3 +393,82 @@ class Client:
         """
         response = await self._request("GET", f"/v1/webhook-events/{event_id}/validate")
         return WebhookValidResponse.model_validate(response)
+
+    async def user_is_subscribed(
+        self,
+        product_uuid: UUID,
+        user_discord_id: str,
+        cancelled_with_time_left: bool = True,
+        ignore_not_found: bool = True,
+    ) -> bool:
+        """
+        Checks if a user is currently subscribed to a product.
+
+        Args:
+            product_uuid (UUID): The UUID of the product to check.
+            user_discord_id (str): The Discord ID of the user to check.
+            cancelled_with_time_left (bool, optional): If true, will consider a cancelled subscription with time left as still subscribed. Defaults to True.
+            ignore_not_found (bool, optional): If false, will raise an exception if the user does not exist. Defaults to True.
+
+        Returns:
+            bool: True if the user is subscribed to the product, False otherwise.
+        """
+        user_orders: list[Order] = []
+
+        try:
+            async for orders in self.aget_orders(user_discord_id=user_discord_id, order_type="UPGRADE"):
+                for order in orders.data:
+                    if not order.order_items:
+                        continue
+                    if str(order.order_items[0].product.uuid) != product_uuid:
+                        continue
+                    if not order.is_subscription:
+                        continue
+                    if not order.order_items:
+                        continue
+                    user_orders.append(order)
+        except ResourceNotFoundError:
+            if not ignore_not_found:
+                raise
+            log.debug(f"User {user_discord_id} does not exist in Upgrade.Chat")
+            return False
+
+        if not user_orders:
+            log.debug(f"User {user_discord_id} has no orders for product {product_uuid}")
+            return False
+
+        # Sort orders by purchased_at date with the most recent first
+        user_orders.sort(key=lambda x: x.purchased_at, reverse=True)
+
+        most_recent_order: Order = user_orders[0]
+        if not most_recent_order.order_items or not most_recent_order.purchased_at:
+            log.debug(f"User {user_discord_id} has no order items or purchase date for product {product_uuid}")
+            return False
+
+        order_item: OrderItem = most_recent_order.order_items[0]
+
+        # Check if first order is still active
+        if not most_recent_order.cancelled_at:
+            log.debug(f"User {user_discord_id} is subscribed to product {product_uuid}")
+            return True
+
+        # If first order is cancelled, check if there is still time left on the subscription based on its interval
+        elif most_recent_order.cancelled_at and cancelled_with_time_left:
+            purchased_at = most_recent_order.purchased_at
+            interval = order_item.interval
+            interval_count = order_item.interval_count
+            # Based on the purchase date, determine if they have left on their subscription
+            if interval == "day":
+                return purchased_at + timedelta(days=interval_count) > datetime.utcnow()
+            elif interval == "week":
+                return purchased_at + timedelta(weeks=interval_count) > datetime.utcnow()
+            elif interval == "month":
+                return purchased_at + timedelta(months=interval_count) > datetime.utcnow()
+            elif interval == "year":
+                return purchased_at + timedelta(years=interval_count) > datetime.utcnow()
+            else:
+                log.error(f"Unknown interval type for order {most_recent_order.uuid}, interval: {interval}")
+                return False
+
+        log.debug(f"User {user_discord_id} is not subscribed to product {product_uuid}")
+        return False

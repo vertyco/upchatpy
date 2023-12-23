@@ -48,5 +48,5 @@ target-version = "py310"
 max-complexity = 10
 
 [tool.pytest.ini_options]
-addopts = "--cov=upgrade_chat --cov-report term-missing"
+addopts = "--cov=upchatpy --cov-report term-missing"
 testpaths = ["tests"]
