@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.2] - 2024-08-18
+
+### Changes
+
+- Added logic to handle rate limits automatically in the `Client` class. If a rate limit is hit, the client will wait for the rate limit to reset before making the request again.
+
 ## [1.1.1] - 2024-08-18
 
 ### Added

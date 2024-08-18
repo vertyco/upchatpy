@@ -22,6 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 """
 
+import asyncio
 import logging
 from datetime import UTC, datetime, timedelta
 from typing import AsyncGenerator, Optional
@@ -107,18 +108,20 @@ class Client:
 
         try:
             async with aiohttp.ClientSession(headers=headers) as session:
-                async with session.request(method, url, data=data) as response:
-                    log.debug("%s, (%s): %s", method, response.status, url)
-
-                    if response.status == 404:
-                        error_details = await response.json()
-                        message = error_details.get("message", "Resource not found")
-                        raise ResourceNotFoundError(response.status, message)
-
-                    response.raise_for_status()
-
-                    return await response.json()
-
+                while True:
+                    async with session.request(method, url, data=data) as response:
+                        log.debug("%s, (%s): %s", method, response.status, url)
+                        if response.status == 404:
+                            error_details = await response.json()
+                            message = error_details.get("message", "Resource not found")
+                            raise ResourceNotFoundError(response.status, message)
+                        elif response.status == 429:
+                            wait = int(response.headers.get("Retry-After", 60))
+                            log.warning("We are being rate limited, trying again in %s seconds", wait)
+                            await asyncio.sleep(wait)
+                            continue
+                        response.raise_for_status()
+                        return await response.json()
         except aiohttp.ClientResponseError as e:
             raise HTTPError(e.status, e.message)
 
