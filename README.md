@@ -4,7 +4,7 @@
 
 # UpChatPy: Upgrade.Chat Python Wrapper
 
-This package provides a fully async, type-hinted wraper for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API.
+This package provides a fully async, type-complete wraper for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API.
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
@@ -13,6 +13,9 @@ This package provides a fully async, type-hinted wraper for the **[Upgrade.Chat]
 [![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3913/)
 [![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-31011/)
 [![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3116/)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3125/)
+
+#### Pydantic Cross Compatibility
 
 [![Pydantic v1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v1.json)](https://docs.pydantic.dev/1.10/contributing/#badges)
 [![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
@@ -51,8 +54,10 @@ client = Client(client_id, client_secret)
 The wrapper handles authentication automatically when making API calls. However, you can manually authenticate and retrieve the access token as follows:
 
 ```python
-await client.get_auth()
-print(client.access_token)  # Access token is now available
+auth = await client.get_auth()
+print(auth.access_token)  # Access token is now available
+or
+print(client.auth.access_token)  # Access token also available via client instance
 ```
 
 ### Fetching Orders

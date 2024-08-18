@@ -1,6 +1,7 @@
 from .api import Client
 from .exceptions import (APIError, AuthenticationError, HTTPError,
                          ResourceNotFoundError)
+from .responses.auth import AuthResponse
 from .responses.enums import (Duration, EventType, Interval, ItemType,
                               OrderType, PaymentProcessor, ProductType)
 from .responses.orders import (Coupon, DiscordRole, Order, OrderItem,
@@ -15,6 +16,7 @@ from .responses.webhooks import (Webhook, WebhookEvent, WebhookEventResponse,
 __all__ = [
     "APIError",
     "AuthenticationError",
+    "AuthResponse",
     "Client",
     "Coupon",
     "DiscordRole",

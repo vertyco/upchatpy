@@ -5,12 +5,14 @@ UPGRADE_CHAT_CLIENT_ID=your_client_id
 UPGRADE_CHAT_CLIENT_SECRET=your_client_secret
 """
 import os
+from datetime import datetime, timedelta
 
 import pytest
 from dotenv import load_dotenv
 
 from upchatpy.api import Client
 from upchatpy.exceptions import AuthenticationError, ResourceNotFoundError
+from upchatpy.responses.auth import AuthResponse
 from upchatpy.version import __version__
 
 load_dotenv()
@@ -27,13 +29,44 @@ async def test_version():
 
 
 @pytest.mark.asyncio
+async def test_get_auth():
+    auth_response = await client.get_auth()
+    assert hasattr(auth_response, "access_token"), "Auth response does not have access_token attribute"
+    assert hasattr(auth_response, "refresh_token"), "Auth response does not have refresh_token attribute"
+    assert hasattr(auth_response, "refresh_token_expires_in"), "Auth response does not have refresh_token_expires_in attribute"
+    assert hasattr(auth_response, "access_token_expires_in"), "Auth response does not have access_token_expires_in attribute"
+    assert hasattr(auth_response, "type"), "Auth response does not have type attribute"
+    assert hasattr(auth_response, "token_type"), "Auth response does not have token_type attribute"
+    assert isinstance(auth_response.access_token_expires_at, datetime), "access_token_expires_at is not a datetime object"
+    assert isinstance(auth_response.refresh_token_expires_at, datetime), "refresh_token_expires_at is not a datetime object"
+    assert isinstance(auth_response.access_token_expired, bool), "access_token_expired is not a boolean"
+    assert isinstance(auth_response.refresh_token_expired, bool), "refresh_token_expired is not a boolean"
+    new_timestamp = str(int((datetime.now() - timedelta(days=60)).timestamp() * 1000))
+    auth_response.refresh_token_expires_in = new_timestamp
+    assert auth_response.refresh_token_expired is True, "refresh_token_expired is not True"
+    auth_response.access_token_expires_in = new_timestamp
+    assert auth_response.access_token_expired is True, "access_token_expired is not True"
+
+
+@pytest.mark.asyncio
+async def test_model_methods():
+    auth_response = await client.get_auth()
+    dict_dump = auth_response.model_dump()
+    assert isinstance(dict_dump, dict), "model_dump did not return a dict"
+    json_dump = auth_response.model_dump_json()
+    assert isinstance(json_dump, str), "model_dump_json did not return a str"
+    assert isinstance(AuthResponse.model_validate(dict_dump), AuthResponse), "model_validate did not return the correct model type"
+    assert isinstance(AuthResponse.model_validate_json(json_dump), AuthResponse), "model_validate_json did not return the correct model type"
+
+
+@pytest.mark.asyncio
 async def test_authentication():
     invalidclient = Client("invalid", "invalid")
     with pytest.raises(AuthenticationError) as exc_info:
         await invalidclient.get_orders()
         assert "Failed to authenticate" in str(exc_info.value)
     await client.get_auth()
-    assert client.access_token is not None, "Authentication failed, no access token obtained"
+    assert client.auth is not None, "Authentication failed, no access token obtained"
 
 
 @pytest.mark.asyncio
@@ -188,7 +221,7 @@ async def test_validate_webhook_event():
 @pytest.mark.asyncio
 async def test_user_is_subscribed():
     # You need to have a valid user ID and product UUID for this test to pass
-    is_subscribed = await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-bbc391c4d53f", "422575858478219288")
+    is_subscribed = await client.user_is_subscribed("C1eaaee5-9620-4343-b9da-bbc391c4d53f", "708960792946671707")
     assert is_subscribed is not None, "Failed to check if user is subscribed"
     assert isinstance(is_subscribed, bool), "is_subscribed is not a boolean"
     assert is_subscribed is True, "User is not subscribed to product"
