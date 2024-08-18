@@ -86,7 +86,6 @@ async def test_get_orders():
         iters += 1
 
 
-
 @pytest.mark.asyncio
 async def test_get_orders_invalid_discord_id():
     with pytest.raises(ResourceNotFoundError) as exc_info:

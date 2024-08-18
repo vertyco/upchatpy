@@ -52,4 +52,5 @@ setup(
     ],
     install_requires=["aiohttp", "pydantic"],
     python_requires=">=3.8",
+    project_urls={"Changelog": "https://github.com/vertyco/upchatpy/blob/main/CHANGELOG.md"},
 )
