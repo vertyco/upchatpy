@@ -7,18 +7,15 @@
 This package provides a fully async, type-complete wraper for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API.
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
+[![Python 3.12](https://img.shields.io/pypi/pyversions/upchatpy)](https://pypi.org/project/upchatpy/)
+
 [![Downloads](https://img.shields.io/pypi/dm/upchatpy)](https://pypi.org/project/upchatpy/)
 ![GitHub License](https://img.shields.io/github/license/vertyco/upchatpy)
 
-[![Python 3.9](https://img.shields.io/badge/python-3.9-blue.svg)](https://www.python.org/downloads/release/python-3913/)
-[![Python 3.10](https://img.shields.io/badge/python-3.10-blue.svg)](https://www.python.org/downloads/release/python-31011/)
-[![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3116/)
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/release/python-3125/)
-
 #### Pydantic Cross Compatibility
 
-[![Pydantic v1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v1.json)](https://docs.pydantic.dev/1.10/contributing/#badges)
-[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/contributing/#badges)
+[![Pydantic v1](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v1.json)](https://docs.pydantic.dev/1.10/)
+[![Pydantic v2](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/pydantic/pydantic/main/docs/badge/v2.json)](https://docs.pydantic.dev/latest/)
 
 #### References
 

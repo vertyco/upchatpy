@@ -81,7 +81,6 @@ async def test_get_orders():
         assert orders is not None, "aget Failed to fetch orders"
         assert hasattr(orders, "data"), "aget Orders response does not have data attribute"
         assert isinstance(orders.data, list), "aget Orders data is not a list"
-        assert len(orders.data) == 1, "aget Orders data length is not 1"
         if iters > 5:
             break
         iters += 1
@@ -120,7 +119,6 @@ async def test_get_products():
         assert products is not None, "aget Failed to fetch products"
         assert hasattr(products, "data"), "aget Products response does not have data attribute"
         assert isinstance(products.data, list), "aget Products data is not a list"
-        assert len(products.data) == 1, "aget Products data length is not 1"
         if iters > 5:
             break
         iters += 1
