@@ -446,11 +446,12 @@ class Client:
                 for order in orders.data:
                     if not order.order_items:
                         continue
-                    if str(order.order_items[0].product.uuid) != product_uuid:
-                        continue
-                    if not order.is_subscription:
-                        continue
-                    if not order.order_items:
+                    skip = [
+                        not order.is_subscription,
+                        str(order.order_items[0].product.uuid) != product_uuid,
+                        order.deleted is not None,
+                    ]
+                    if any(skip):
                         continue
                     user_orders.append(order)
         except ResourceNotFoundError:

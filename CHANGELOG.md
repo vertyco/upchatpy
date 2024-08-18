@@ -1,5 +1,11 @@
 # Changelog
 
+## [1.1.1] - 2024-08-18
+
+### Added
+
+- Added missing fields to `Product` and `Order` models
+
 ## [1.1.0] - 2024-08-18
 
 ### Added

@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 from uuid import UUID
 
 from pydantic import Field
@@ -41,19 +41,22 @@ class Product(_Base):
 
 
 class OrderItem(_Base):
-    price: Optional[float] = None
-    quantity: Optional[float] = None
+    price: Union[float, int]
+    quantity: int
     interval: Optional[Interval] = None
-    interval_count: Optional[float] = None
-    free_trial_length: Optional[float] = None
+    interval_count: Optional[int] = None
+    free_trial_length: Optional[int] = None
     is_time_limited: Optional[bool] = None
+    payment_procesor_record_id: Optional[str] = None
+    payment_processor: PaymentProcessor
     type: Optional[ItemType] = None
     discord_roles: Optional[List[DiscordRole]] = None
     product_types: Optional[List[ProductType]] = Field(
         None,
         description="The types of the product. A product purchased through the shop will be a shop product. All other types are upgrades.",
     )
-    product: Optional[Product] = Field(None, description="An Upgrade.Chat product")
+    product: Product
+    product_uuid: Optional[UUID] = None
 
 
 class Order(_Base):
@@ -63,13 +66,17 @@ class Order(_Base):
     payment_processor_record_id: Optional[str] = None
     user: Optional[OrderUser] = None
     subtotal: Optional[float] = None
-    discount: Optional[float] = None
     total: Optional[float] = None
+    discount: Optional[float] = None
     coupon_code: Optional[str] = Field(None, description="The applied coupon code if any")
     coupon: Optional[Coupon] = Field(None, description="The applied coupon if any")
     type: Optional[OrderType] = None
     is_subscription: Optional[bool] = None
+    first_invoice_due_at: Optional[datetime] = None
+    upcoming_invoice_due_at: Optional[datetime] = None
     cancelled_at: Optional[datetime] = Field(None, description="The date when the subscription was cancelled")
+    created: Optional[datetime] = Field(None, description="The date when the order was created")
+    updated: Optional[datetime] = Field(None, description="The date when the order was last updated")
     deleted: Optional[datetime] = Field(None, description="The date when the subscription expired")
     order_items: Optional[List[OrderItem]] = None
 
