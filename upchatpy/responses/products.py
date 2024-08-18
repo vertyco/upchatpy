@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import List, Optional
-from uuid import UUID
 
 from pydantic import AnyUrl, Field
 
@@ -12,7 +11,7 @@ from .enums import Interval, OrderType, ProductType, TrialAbuseCheck
 
 class Product(_Base):
     id: int
-    uuid: Optional[UUID] = Field(None, description="The UUID of the product")
+    uuid: Optional[str] = Field(None, description="The UUID of the product")
     checkout_uri: Optional[AnyUrl] = Field(None, description="Direct Link to Product")
     name: Optional[str] = Field(None, description="The name of the product")
     description: Optional[str] = Field(None, description="The description of the product")

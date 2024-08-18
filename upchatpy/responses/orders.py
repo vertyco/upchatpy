@@ -2,7 +2,6 @@ from __future__ import annotations
 
 from datetime import datetime
 from typing import List, Optional, Union
-from uuid import UUID
 
 from pydantic import Field
 
@@ -36,7 +35,7 @@ class DiscordRole(_Base):
 
 
 class Product(_Base):
-    uuid: Optional[UUID] = None
+    uuid: Optional[str] = None
     name: Optional[str] = None
 
 
@@ -56,7 +55,7 @@ class OrderItem(_Base):
         description="The types of the product. A product purchased through the shop will be a shop product. All other types are upgrades.",
     )
     product: Product
-    product_uuid: Optional[UUID] = None
+    product_uuid: Optional[str] = None
 
 
 class Order(_Base):
