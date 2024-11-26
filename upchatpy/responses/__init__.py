@@ -1,14 +1,20 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Literal, Set, Type, TypeVar
+from typing import Any, Callable, Dict, Literal, Set, Type, TypeVar, Union
 
 import typing_extensions
 from pydantic import VERSION, BaseModel
-from pydantic.deprecated.parse import Protocol as DeprecatedParseProtocol
 from pydantic_core import PydanticUndefined
 
+V2 = list(map(int, VERSION.split("."))) >= [2, 0, 0]
+if V2:
+    from pydantic.deprecated.parse import \
+        Protocol as DeprecatedParseProtocol  # type: ignore
+else:
+    from pydantic.parse import Protocol as DeprecatedParseProtocol
+
 Model = TypeVar("Model", bound="BaseModel")
-IncEx: typing_extensions.TypeAlias = "Set[int] | Set[str] | Dict[int, Any] | Dict[str, Any] | None"
+IncEx: typing_extensions.TypeAlias = "Union[Set[int], Set[str], Dict[int, Any], Dict[str, Any], None]"
 
 
 class _Base(BaseModel):
@@ -19,11 +25,11 @@ class _Base(BaseModel):
         cls: Type[Model],
         obj: Any,
         *,
-        strict: bool | None = None,
-        from_attributes: bool | None = None,
-        context: dict[str, Any] | None = None,
+        strict: Union[bool, None] = None,
+        from_attributes: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
     ) -> Model:
-        if VERSION >= "2.0.1":
+        if V2:
             return super().model_validate(
                 obj,
                 strict=strict,
@@ -35,18 +41,18 @@ class _Base(BaseModel):
     @classmethod
     def model_validate_json(
         cls: Type[Model],
-        json_data: str | bytes | bytearray,
+        json_data: Union[str, bytes, bytearray],
         *,
         # >= 2.0.1
-        strict: bool | None = None,
-        context: dict[str, Any] | None = None,
+        strict: Union[bool, None] = None,
+        context: Union[Dict[str, Any], None] = None,
         # < 2.0.1
-        content_type: str | None = None,
+        content_type: Union[str, None] = None,
         encoding: str = "utf8",
-        proto: DeprecatedParseProtocol | None = None,
+        proto: Union[DeprecatedParseProtocol, None] = None,
         allow_pickle: bool = False,
     ):
-        if VERSION >= "2.0.1":
+        if V2:
             return super().model_validate_json(
                 json_data,
                 strict=strict,
@@ -63,7 +69,7 @@ class _Base(BaseModel):
     def model_dump(
         self,
         *,
-        mode: Literal["json", "python"] | str = "python",
+        mode: Literal["json", "python"] = "python",
         include: IncEx = None,
         exclude: IncEx = None,
         by_alias: bool = False,
@@ -73,7 +79,7 @@ class _Base(BaseModel):
         round_trip: bool = False,
         warnings: bool = True,
     ):
-        if VERSION >= "2.0.1":
+        if V2:
             return super().model_dump(
                 mode=mode,
                 include=include,
@@ -97,7 +103,7 @@ class _Base(BaseModel):
     def model_dump_json(
         self,
         *,
-        indent: int | None = None,
+        indent: Union[int, None] = None,
         include: IncEx = None,
         exclude: IncEx = None,
         by_alias: bool = False,
@@ -108,11 +114,11 @@ class _Base(BaseModel):
         round_trip: bool = False,
         warnings: bool = True,
         # < 2.0.1
-        encoder: Callable[[Any], Any] | None = PydanticUndefined,
+        encoder: Union[Callable[[Any], Any], None] = PydanticUndefined,
         models_as_dict: bool = PydanticUndefined,
         **dumps_kwargs: Any,
     ):
-        if VERSION >= "2.0.1":
+        if V2:
             return super().model_dump_json(
                 indent=indent,
                 include=include,

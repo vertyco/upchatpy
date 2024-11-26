@@ -25,7 +25,7 @@ SOFTWARE.
 import asyncio
 import logging
 from datetime import UTC, datetime, timedelta
-from typing import AsyncGenerator, Optional
+from typing import AsyncGenerator, List, Literal, Optional
 from urllib.parse import urlencode
 
 import aiohttp
@@ -43,9 +43,19 @@ log = logging.getLogger("upgrade.chat")
 
 
 class Client:
-    BASE_URL = "https://api.upgrade.chat"
+    """Upgrade.Chat API has a global rate limit of 10 requests per 10 seconds. (so 1/s with some burst tolerance)"""
 
-    def __init__(self, client_id: str, client_secret: str, auth: Optional[AuthResponse] = None):
+    BASE_URL = "https://api.upgrade.chat"
+    RATE_LIMIT = 10
+    RATE_PERIOD = 10  # seconds
+
+    def __init__(
+        self,
+        client_id: str,
+        client_secret: str,
+        auth: Optional[AuthResponse] = None,
+        timeout: Optional[float] = None,
+    ):
         """
         Initializes the Client with the provided client ID and client secret.
 
@@ -56,31 +66,23 @@ class Client:
         self.client_id = client_id
         self.client_secret = client_secret
         self.auth = auth
+        self.timeout = timeout
 
-    async def get_auth(self) -> AuthResponse:
+        self._calls: List[float] = []
+
+    async def _handle_rate_limit(self):
         """
-        Authenticates the client and retrieves the access token from Upgrade.Chat.
-
-        Raises:
-            AuthenticationError: if authentication fails.
-
-        Returns:
-            AuthResponse: The authentication response.
+        Handles the rate limit by waiting until the rate limit period has passed.
         """
-        url = f"{self.BASE_URL}/oauth/token"
-        data = {
-            "client_id": self.client_id,
-            "client_secret": self.client_secret,
-            "grant_type": "client_credentials",
-        }
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url=url, json=data) as response:
-                if response.status != 200:
-                    raise AuthenticationError(response.status, "Failed to authenticate with Upgrade.Chat API")
-                self.auth = AuthResponse.model_validate(await response.json())
-                return self.auth
+        current_time = datetime.now().timestamp()
+        self._calls = [timestamp for timestamp in self._calls if current_time - timestamp < self.RATE_PERIOD]
 
-    async def _request(self, method: str, endpoint: str, data: dict = None) -> dict:
+        if len(self._calls) >= self.RATE_LIMIT:
+            wait_time = self.RATE_PERIOD - (current_time - self._calls[0])
+            log.info("Rate limit reached, waiting for %s seconds", wait_time)
+            await asyncio.sleep(wait_time)
+
+    async def _request(self, method: str, endpoint: str, data: Optional[dict] = None) -> dict:
         """
         Internal method to send HTTP requests to the Upgrade.Chat API.
 
@@ -96,41 +98,76 @@ class Client:
         Returns:
             dict: The JSON response as a dictionary.
         """
-        if self.auth is None:
-            log.debug("No auth token, fetching")
-            await self.get_auth()
-        elif self.auth.access_token_expired:
-            log.debug("Access token expired, refreshing")
-            await self.get_auth()
 
-        headers = {"Authorization": f"Bearer {self.auth.access_token}"}
-        url = f"{self.BASE_URL}{endpoint}"
+        headers = None
+        timeout = aiohttp.ClientTimeout(total=self.timeout)
+
+        if endpoint != "/oauth/token":
+            if self.auth is None:
+                log.debug("No auth token, fetching")
+                await self.get_auth()
+            elif self.auth.access_token_expired:
+                log.debug("Access token expired, refreshing")
+                await self.get_auth()
+            headers = {"Authorization": f"Bearer {self.auth.access_token}"}
+        elif self.auth is not None:  # get_auth called even though we have an auth token
+            # Trying to re-authorize? check if token is expired
+            if not self.auth.access_token_expired:
+                # get_auth was needlessly called, dont waste a request and just return the model dump
+                return self.auth.model_dump(mode="json")
+
+        await self._handle_rate_limit()
 
         try:
-            async with aiohttp.ClientSession(headers=headers) as session:
+            async with aiohttp.ClientSession(headers=headers, timeout=timeout) as session:
                 while True:
-                    async with session.request(method, url, data=data) as response:
-                        log.debug("%s, (%s): %s", method, response.status, url)
-                        if response.status == 404:
+                    async with session.request(method, f"{self.BASE_URL}{endpoint}", data=data) as response:
+                        log.debug("%s, (%s): %s", method, response.status, response.url)
+                        if response.status != 200 and endpoint == "/oauth/token":
+                            raise AuthenticationError(response.status, "Failed to authenticate with Upgrade.Chat API")
+                        elif response.status == 404:
                             error_details = await response.json()
                             message = error_details.get("message", "Resource not found")
                             raise ResourceNotFoundError(response.status, message)
+                        elif response.status == 401:
+                            await self.get_auth()
+                            continue
                         elif response.status == 429:
                             wait = int(response.headers.get("Retry-After", 60))
                             log.warning("We are being rate limited, trying again in %s seconds", wait)
                             await asyncio.sleep(wait)
                             continue
                         response.raise_for_status()
+                        self._calls.append(datetime.now().timestamp())
                         return await response.json()
         except aiohttp.ClientResponseError as e:
             raise HTTPError(e.status, e.message)
+
+    async def get_auth(self) -> AuthResponse:
+        """
+        Authenticates the client and retrieves the access token from Upgrade.Chat.
+
+        Raises:
+            AuthenticationError: if authentication fails.
+
+        Returns:
+            AuthResponse: The authentication response.
+        """
+        data = {
+            "client_id": self.client_id,
+            "client_secret": self.client_secret,
+            "grant_type": "client_credentials",
+        }
+        response = await self._request("POST", "/oauth/token", data)
+        self.auth = AuthResponse.model_validate(response)
+        return self.auth
 
     async def aget_orders(
         self,
         limit: int = 100,
         offset: int = 0,
         user_discord_id: Optional[str] = None,
-        order_type: Optional[str] = None,
+        order_type: Optional[Literal["SHOP", "UPGRADE"]] = None,
         coupon: Optional[bool] = None,
     ) -> AsyncGenerator[OrdersResponse, None]:
         """
@@ -165,7 +202,7 @@ class Client:
         limit: int = 100,
         offset: int = 0,
         user_discord_id: Optional[str] = None,
-        order_type: Optional[str] = None,
+        order_type: Optional[Literal["SHOP", "UPGRADE"]] = None,
         coupon: Optional[str] = None,
     ) -> OrdersResponse:
         """
@@ -426,7 +463,7 @@ class Client:
         self,
         product_uuid: str,
         user_discord_id: str,
-        cancelled_with_time_left: bool = True,
+        include_cancelled: bool = True,
         ignore_not_found: bool = True,
     ) -> bool:
         """
@@ -435,7 +472,7 @@ class Client:
         Args:
             product_uuid (str): The UUID of the product to check.
             user_discord_id (str): The Discord ID of the user to check.
-            cancelled_with_time_left (bool, optional): If true, will consider a cancelled subscription with time left as still subscribed. Defaults to True.
+            include_cancelled (bool, optional): If true, will consider a cancelled subscription with time left as still subscribed. Defaults to True.
             ignore_not_found (bool, optional): If false, will raise an exception if the user does not exist. Defaults to True.
 
         Returns:
@@ -447,14 +484,17 @@ class Client:
         try:
             async for orders in self.aget_orders(user_discord_id=user_discord_id, order_type="UPGRADE"):
                 for order in orders.data:
+                    if not order.purchased_at:
+                        continue
                     if not order.order_items:
                         continue
-                    skip = [
-                        not order.is_subscription,
-                        str(order.order_items[0].product.uuid) != product_uuid,
-                        order.deleted is not None,
-                    ]
-                    if any(skip):
+                    if not order.is_subscription:
+                        continue
+                    if order.deleted is not None:
+                        # Check if the deleted date has passed
+                        if order.deleted < datetime.now(UTC):
+                            continue
+                    if str(order.order_items[0].product.uuid) != product_uuid:
                         continue
                     user_orders.append(order)
         except ResourceNotFoundError:
@@ -471,34 +511,52 @@ class Client:
         user_orders.sort(key=lambda x: x.purchased_at, reverse=True)
 
         most_recent_order: Order = user_orders[0]
-        if not most_recent_order.order_items or not most_recent_order.purchased_at:
-            log.debug("User %s has no order items or purchase date for product %s", user_discord_id, product_uuid)
-            return False
+        if most_recent_order.deleted is not None:
+            # Subscription is still active
+            log.debug(
+                "User %s's subscription for %s is active but will be deleted on %s",
+                user_discord_id,
+                product_uuid,
+                most_recent_order.deleted,
+            )
+            return True
 
-        order_item: OrderItem = most_recent_order.order_items[0]
-
-        # Check if first order is still active
         if not most_recent_order.cancelled_at:
             log.debug("User %s is subscribed to product %s", user_discord_id, product_uuid)
             return True
 
-        # If first order is cancelled, check if there is still time left on the subscription based on its interval
-        elif most_recent_order.cancelled_at and cancelled_with_time_left:
-            purchased_at = most_recent_order.purchased_at
-            interval = order_item.interval.value
-            interval_count = order_item.interval_count or 1
-            # Based on the purchase date, determine if they have left on their subscription
-            if interval == "day":
-                return purchased_at + timedelta(days=interval_count) > datetime.now(UTC)
-            elif interval == "week":
-                return purchased_at + timedelta(weeks=interval_count) > datetime.now(UTC)
-            elif interval == "month":
-                return purchased_at + timedelta(days=interval_count * 30) > datetime.now(UTC)
-            elif interval == "year":
-                return purchased_at + timedelta(days=interval_count * 365) > datetime.now(UTC)
-            else:
-                log.error("Unknown interval type for order %s, interval: %s", most_recent_order.uuid, interval)
-                return False
+        # Order has a cancel date
+        if not include_cancelled:
+            log.debug(
+                "User %s's subscription to product %s is cancelled and will be considered inactive",
+                user_discord_id,
+                product_uuid,
+            )
+            return False
 
-        log.debug("User %s is not subscribed to product %s", user_discord_id, product_uuid)
+        if not most_recent_order.order_items or not most_recent_order.purchased_at:
+            # This wont happen but we'll raise an error just in case
+            raise ValueError(f"Order {most_recent_order.uuid} has no order items or purchased_at date")
+
+        # Check if the cancelled subscription has time left
+        order_item: OrderItem = most_recent_order.order_items[0]
+        purchased_at = most_recent_order.purchased_at
+        interval = order_item.interval.value
+        interval_count = order_item.interval_count or 1
+        if interval == "day":
+            expires_on = purchased_at + timedelta(days=interval_count)
+        elif interval == "week":
+            expires_on = purchased_at + timedelta(weeks=interval_count)
+        elif interval == "month":
+            expires_on = purchased_at + timedelta(days=interval_count * 30)
+        elif interval == "year":
+            expires_on = purchased_at + timedelta(days=interval_count * 365)
+        else:
+            raise ValueError(f"Unknown interval type for order {most_recent_order.uuid}, interval: {interval}")
+
+        if expires_on > datetime.now(UTC):
+            log.debug("User %s's sub to product %s is active but ends on %s", user_discord_id, product_uuid, expires_on)
+            return True
+
+        log.debug("User %s is not subscribed to product %s", user_discord_id)
         return False

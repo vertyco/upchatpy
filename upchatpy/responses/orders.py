@@ -59,27 +59,27 @@ class OrderItem(_Base):
 
 
 class Order(_Base):
-    uuid: Optional[str] = Field(None, description="The UUID of the order")
-    purchased_at: Optional[datetime] = Field(None, description="The date and time when the order was purchased")
-    payment_processor: Optional[PaymentProcessor] = Field(None, description="The payment processor used for the order")
-    payment_processor_record_id: Optional[str] = Field(
-        None, description="The record ID associated with the payment processor"
+    uuid: str = Field(description="The UUID of the order")
+    purchased_at: datetime = Field(description="The date and time when the order was purchased")
+    payment_processor: PaymentProcessor = Field(description="The payment processor used for the order")
+    payment_processor_record_id: str = Field(description="The record ID associated with the payment processor")
+    user: OrderUser = Field(description="The user associated with the order")
+    subtotal: float = Field(description="The subtotal amount of the order")
+    total: float = Field(description="The total amount of the order")
+    discount: float = Field(description="The discount applied to the order")
+    coupon_code: Union[str, None] = Field(None, description="The applied coupon code if any")
+    coupon: Union[Coupon, None] = Field(None, description="The applied coupon if any")
+    type: OrderType = Field(description="The type of the order")
+    is_subscription: bool = Field(False, description="Indicates if the order is a subscription")
+    first_invoice_due_at: Union[datetime, None] = Field(description="The due date of the first invoice")
+    upcoming_invoice_due_at: Union[datetime, None] = Field(description="The due date of the upcoming invoice")
+    cancelled_at: Union[datetime, None] = Field(None, description="The date when the subscription was cancelled")
+    created: Optional[datetime] = Field(
+        None, description="The date when the order was created (Missing if from WebhookEventsResponse)"
     )
-    user: Optional[OrderUser] = Field(None, description="The user associated with the order")
-    subtotal: Optional[float] = Field(None, description="The subtotal amount of the order")
-    total: Optional[float] = Field(None, description="The total amount of the order")
-    discount: Optional[float] = Field(None, description="The discount applied to the order")
-    coupon_code: Optional[str] = Field(None, description="The applied coupon code if any")
-    coupon: Optional[Coupon] = Field(None, description="The applied coupon if any")
-    type: Optional[OrderType] = Field(None, description="The type of the order")
-    is_subscription: Optional[bool] = Field(None, description="Indicates if the order is a subscription")
-    first_invoice_due_at: Optional[datetime] = Field(None, description="The due date of the first invoice")
-    upcoming_invoice_due_at: Optional[datetime] = Field(None, description="The due date of the upcoming invoice")
-    cancelled_at: Optional[datetime] = Field(None, description="The date when the subscription was cancelled")
-    created: Optional[datetime] = Field(None, description="The date when the order was created")
-    updated: Optional[datetime] = Field(None, description="The date when the order was last updated")
-    deleted: Optional[datetime] = Field(None, description="The date when the subscription expired")
-    order_items: Optional[List[OrderItem]] = Field(None, description="The items included in the order")
+    updated: Union[datetime, None] = Field(None, description="The date when the order was last updated")
+    deleted: Union[datetime, None] = Field(None, description="The date when the subscription expired")
+    order_items: List[OrderItem] = Field(description="The items included in the order")
 
 
 class OrdersResponse(_Base):

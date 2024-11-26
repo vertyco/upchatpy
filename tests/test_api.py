@@ -76,14 +76,14 @@ async def test_get_orders():
     assert hasattr(orders_response, "data"), "Orders response does not have data attribute"
     assert isinstance(orders_response.data, list), "Orders data is not a list"
 
-    iters = 1
+    stop = False
     async for orders in client.aget_orders(limit=1):
         assert orders is not None, "aget Failed to fetch orders"
         assert hasattr(orders, "data"), "aget Orders response does not have data attribute"
         assert isinstance(orders.data, list), "aget Orders data is not a list"
-        if iters > 5:
+        if stop:
             break
-        iters += 1
+        stop = True
 
 
 @pytest.mark.asyncio
@@ -113,14 +113,14 @@ async def test_get_products():
     assert hasattr(products_response, "data"), "Products response does not have data attribute"
     assert isinstance(products_response.data, list), "Products data is not a list"
 
-    iters = 1
+    stop = False
     async for products in client.aget_products(limit=1):
         assert products is not None, "aget Failed to fetch products"
         assert hasattr(products, "data"), "aget Products response does not have data attribute"
         assert isinstance(products.data, list), "aget Products data is not a list"
-        if iters > 5:
+        if stop:
             break
-        iters += 1
+        stop = True
 
 
 @pytest.mark.asyncio
@@ -151,14 +151,14 @@ async def test_get_webhooks():
     assert hasattr(webhooks_response, "data"), "Webhooks response does not have data attribute"
     assert isinstance(webhooks_response.data, list), "Webhooks data is not a list"
 
-    iters = 1
+    stop = False
     async for webhooks in client.aget_webhooks(limit=1):
         assert webhooks is not None, "aget Failed to fetch webhooks"
         assert hasattr(webhooks, "data"), "aget webhooks response does not have data attribute"
         assert isinstance(webhooks.data, list), "aget webhooks data is not a list"
-        iters += 1
-        if iters > 2:
+        if stop:
             break
+        stop = True
 
 
 @pytest.mark.asyncio
@@ -181,14 +181,14 @@ async def test_get_webhook_events():
     assert hasattr(webhook_events_response, "data"), "Webhook events response does not have data attribute"
     assert isinstance(webhook_events_response.data, list), "Webhook events data is not a list"
 
-    iters = 1
+    stop = False
     async for webhook_events in client.aget_webhook_events(limit=1):
         assert webhook_events is not None, "aget Failed to fetch webhook events"
         assert hasattr(webhook_events, "data"), "aget webhook events response does not have data attribute"
         assert isinstance(webhook_events.data, list), "aget webhook events data is not a list"
-        iters += 1
-        if iters > 2:
+        if stop:
             break
+        stop = True
 
 
 @pytest.mark.asyncio
@@ -230,7 +230,7 @@ async def test_user_is_subscribed():
 @pytest.mark.asyncio
 async def test_user_is_not_subscribed():
     # You need to have a valid user ID and product UUID for this test to pass
-    is_subscribed = await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-bbc391c4d53f", "691065892099981372")
+    is_subscribed = await client.user_is_subscribed("c1eaaee5-9620-4343-b9da-bbc391c4d53f", "826358881126842428")
     assert is_subscribed is not None, "Failed to check if user is subscribed"
     assert isinstance(is_subscribed, bool), "is_subscribed is not a boolean"
     assert is_subscribed is False, "User is subscribed to product"
