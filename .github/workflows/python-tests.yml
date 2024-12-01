@@ -1,0 +1,39 @@
+name: Python Tests
+
+on:
+  pull_request:
+    branches:
+      - main  # Change this to your default branch if it's not 'main'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.8, 3.9, 3.10, 3.11, 3.12]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev-requirements.txt
+          pip install -r requirements.txt  # Adjust if you have a different dependency file
+
+      - name: Set environment variables
+        env:
+          UPGRADE_CHAT_CLIENT_ID: ${{ secrets.UPGRADE_CHAT_CLIENT_ID }}
+          UPGRADE_CHAT_CLIENT_SECRET: ${{ secrets.UPGRADE_CHAT_CLIENT_SECRET }}
+        run: |
+          echo "UPGRADE_CHAT_CLIENT_ID=${{ secrets.UPGRADE_CHAT_CLIENT_ID }}" >> .env
+          echo "UPGRADE_CHAT_CLIENT_SECRET=${{ secrets.UPGRADE_CHAT_CLIENT_SECRET }}" >> .env
+
+      - name: Run tests
+        run: pytest
