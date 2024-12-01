@@ -22,6 +22,10 @@ client_id = os.getenv("UPGRADE_CHAT_CLIENT_ID")
 client_secret = os.getenv("UPGRADE_CHAT_CLIENT_SECRET")
 client = Client(client_id=client_id, client_secret=client_secret)
 
+@pytest.mark.asyncio
+async def test_environment():
+    assert client_id is not None, "UPGRADE_CHAT_CLIENT_ID is not set in environment"
+    assert client_secret is not None, "UPGRADE_CHAT_CLIENT_SECRET is not set in environment"
 
 @pytest.mark.asyncio
 async def test_version():
