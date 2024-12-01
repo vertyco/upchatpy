@@ -4,7 +4,7 @@
 
 # UpChatPy: Upgrade.Chat Python Wrapper
 
-This package provides a fully async, type-complete wraper for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API.
+This package provides an async, rate-limit friendly, type-complete wraper for the **[Upgrade.Chat](https://upgrade.chat/developers/documentation)** API.
 
 [![PyPi](https://img.shields.io/pypi/v/upchatpy)](https://pypi.org/project/upchatpy/)
 [![Python 3.12](https://img.shields.io/pypi/pyversions/upchatpy)](https://pypi.org/project/upchatpy/)
