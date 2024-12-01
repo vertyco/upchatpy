@@ -123,10 +123,15 @@ class Client:
                 while True:
                     async with session.request(method, f"{self.BASE_URL}{endpoint}", data=data) as response:
                         log.debug("%s, (%s): %s", method, response.status, response.url)
-                        if response.status != 200 and endpoint == "/oauth/token":
+                        if response.status == 429:
+                            wait = int(response.headers.get("Retry-After", 60))
+                            log.warning("We are being rate limited, trying again in %s seconds", wait)
+                            await asyncio.sleep(wait)
+                            continue
+                        elif response.status != 200 and endpoint == "/oauth/token":
                             raise AuthenticationError(
                                 response.status,
-                                f"[{response.status}] Failed to authenticate with Upgrade.Chat API: {await response.text()}",
+                                f"[{response.status}] Failed to authenticate with Upgrade.Chat API",
                             )
                         elif response.status == 404:
                             error_details = await response.json()
@@ -135,11 +140,6 @@ class Client:
                         elif response.status == 401:
                             log.warning("Authentication failed, re-authenticating")
                             await self.get_auth()
-                            continue
-                        elif response.status == 429:
-                            wait = int(response.headers.get("Retry-After", 60))
-                            log.warning("We are being rate limited, trying again in %s seconds", wait)
-                            await asyncio.sleep(wait)
                             continue
                         response.raise_for_status()
                         self._calls.append(datetime.now().timestamp())
