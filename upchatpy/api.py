@@ -124,12 +124,16 @@ class Client:
                     async with session.request(method, f"{self.BASE_URL}{endpoint}", data=data) as response:
                         log.debug("%s, (%s): %s", method, response.status, response.url)
                         if response.status != 200 and endpoint == "/oauth/token":
-                            raise AuthenticationError(response.status, "Failed to authenticate with Upgrade.Chat API")
+                            raise AuthenticationError(
+                                response.status,
+                                f"[{response.status}] Failed to authenticate with Upgrade.Chat API: {await response.text()}",
+                            )
                         elif response.status == 404:
                             error_details = await response.json()
-                            message = error_details.get("message", "Resource not found")
-                            raise ResourceNotFoundError(response.status, message)
+                            message = error_details.get("message", "404 Resource not found")
+                            raise ResourceNotFoundError(response.status, f"[{response.status}] {message}")
                         elif response.status == 401:
+                            log.warning("Authentication failed, re-authenticating")
                             await self.get_auth()
                             continue
                         elif response.status == 429:
