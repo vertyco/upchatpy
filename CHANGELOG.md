@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.1.5] - 2024-12-1
+
+### Changes
+
+- Minor updates to error messages, includes status code in the message.
+- Added additional test for os environment variables.
+- Rate limit status code now checked before anything else.
+
 ## [1.1.2] - 2024-08-18
 
 ### Changes

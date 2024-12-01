@@ -129,10 +129,10 @@ class Client:
                             await asyncio.sleep(wait)
                             continue
                         elif response.status != 200 and endpoint == "/oauth/token":
-                            raise AuthenticationError(
-                                response.status,
-                                f"[{response.status}] Failed to authenticate with Upgrade.Chat API",
-                            )
+                            msg = f"[{response.status}] Failed to authenticate with Upgrade.Chat API"
+                            if response.status == 400:
+                                msg += " (Make sure client ID and secret are correct)"
+                            raise AuthenticationError(response.status, msg)
                         elif response.status == 404:
                             error_details = await response.json()
                             message = error_details.get("message", "404 Resource not found")
